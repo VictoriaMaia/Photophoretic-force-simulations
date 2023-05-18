@@ -38,13 +38,6 @@ def j1_frozen_wave_beam_with_three_size_parameters_G1_FW():
     time_file_name = path + beam + simulation + execution + version_serial + ".csv"
     print(time_file_name)
 
-    time_file = open(time_file_name, 'w', newline='')
-    writer_csv_file = csv.DictWriter(time_file, fieldnames= ["execucao", "tempo"])
-    writer_csv_file. writeheader()
-
-    dic_time = {'execucao':0, 'tempo':0}
-    
-
     var_lambda = 1064 * nano
         
     ur = 1
@@ -65,28 +58,27 @@ def j1_frozen_wave_beam_with_three_size_parameters_G1_FW():
 
     z0 = np.linspace(0, 400*micro, qnt_points)
 
-    pbar = tqdm(colour=orange, total=max_executions, desc="Calculating points", leave=False)
-    for e in range(max_executions):            
-        start = timer() 
-    
-        for i in z0:
-            j1(particle_x_01, FrozenWaveAttributes(k, i, q, l, n))*2500
-            j1(particle_x_3, FrozenWaveAttributes(k, i, q, l, n))
-            j1(particle_x_8, FrozenWaveAttributes(k, i, q, l, n))
+    with open(time_file_name, mode="w", newline='') as time_file:
+        fieldnames = ["execucao", "tempo"]
+        writer_csv_file = csv.DictWriter(time_file, fieldnames=fieldnames)
+        writer_csv_file.writeheader()
 
-        total_time = timer()-start
-        
-        dic_time["execucao"] = e+1
-        dic_time["tempo"] = total_time
-                
-        writer_csv_file.writerow(dic_time)
-        pbar.update()
+        with tqdm(colour=orange, total=max_executions, desc="Calculating points", leave=True) as pbar:
+            for e in range(max_executions):            
+                start = timer() 
+            
+                for i in z0:
+                    j1(particle_x_01, FrozenWaveAttributes(k, i, q, l, n))*2500
+                    j1(particle_x_3, FrozenWaveAttributes(k, i, q, l, n))
+                    j1(particle_x_8, FrozenWaveAttributes(k, i, q, l, n))
 
-    time_file.close()
-    pbar.refresh()
-    pbar.close()   
+                total_time = timer()-start
 
+                dic_time = {fieldnames[0]: e+1, fieldnames[1]: total_time}
+                writer_csv_file.writerows([dic_time])
+                pbar.update()
 
+        pbar.refresh()
 
 
 def j1_frozen_wave_with_varing_z0_values_l2_l4_G2_FW():  
@@ -94,12 +86,6 @@ def j1_frozen_wave_with_varing_z0_values_l2_l4_G2_FW():
 
     time_file_name = path + beam + simulation + execution + version_serial + ".csv"
     print(time_file_name)
-
-    time_file = open(time_file_name, 'w', newline='')
-    writer_csv_file = csv.DictWriter(time_file, fieldnames= ["execucao", "tempo"])
-    writer_csv_file. writeheader()
-
-    dic_time = {'execucao':0, 'tempo':0}
 
     var_lambda = 1064 * nano
         
@@ -115,28 +101,28 @@ def j1_frozen_wave_with_varing_z0_values_l2_l4_G2_FW():
     m_038 = 1.57 - 0.038j
     x = np.linspace(0.1, 20, qnt_points)
 
-    total_time = 0
-    
-    pbar = tqdm(colour=orange, total=max_executions, desc="Calculating points", leave=False)
-    for e in range(max_executions):            
-        start = timer()
-        
-        for i_x in x:
-            j1(ParticleAttributes(i_x, m_038, ur), fw_l2)
-            j1(ParticleAttributes(i_x, m_038, ur), fw_l4)*250
-        
-        total_time = timer()-start
-        
-        dic_time["execucao"] = e+1
-        dic_time["tempo"] = total_time
-                
-        writer_csv_file.writerow(dic_time)
-        pbar.update()
 
-    time_file.close()
-    pbar.refresh()
-    pbar.close()  
-   
+    with open(time_file_name, mode="w", newline='') as time_file:
+        fieldnames = ["execucao", "tempo"]
+        writer_csv_file = csv.DictWriter(time_file, fieldnames=fieldnames)
+        writer_csv_file.writeheader()
+
+        with tqdm(colour=orange, total=max_executions, desc="Calculating points", leave=True) as pbar:
+            for e in range(max_executions):            
+                start = timer()
+                
+                for i_x in x:
+                    j1(ParticleAttributes(i_x, m_038, ur), fw_l2)
+                    j1(ParticleAttributes(i_x, m_038, ur), fw_l4)*250
+                
+                total_time = timer()-start
+                
+                dic_time = {fieldnames[0]: e+1, fieldnames[1]: total_time}
+                writer_csv_file.writerows([dic_time])
+                pbar.update()
+
+        pbar.refresh()
+
 
 if __name__ == '__main__':
     print("Frozen Wave simulations")

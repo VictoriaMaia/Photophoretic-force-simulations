@@ -8,13 +8,12 @@ from simulations.create_graph import plot_graphic
 from simulations.time_operations import *
 from timeit import default_timer as timer
 from tqdm import tqdm
-from itertools import repeat
+from functools import partial
 
 import csv
 import math
 import numpy as np
 import multiprocessing
-import functools
 
 ################################################################################## 
 #   VERSÃO 2                                                                     #
@@ -27,30 +26,27 @@ mili = 10**(-3)
 micro = 10**(-6) 
 nano = 10**(-9)
 
-orange = '#ff6800'
+blue = '#1c8bf1'
 
-max_executions = 1
-qnt_points = 1
-qnt_process = 1
+max_executions = 10
+qnt_points = 50
 
-path = "./outputs/time_result/"
+# qnt_process = multiprocessing.cpu_count()
+qnt_process = 4
+
+path = "./outputs/time_result/FW_v2/"
 beam = "j1_frozen_wave_"
-simulation = "with_z0_l2_l4_"
 execution = f'and_{max_executions}_times_{qnt_points}_values_'
 version = "v_2_"
 
 process = f'with_{qnt_process}_process'
 
 
-def j1_frozen_wave_with_varing_z0_values():    
+def j1_frozen_wave_with_varing_z0_values_l2_l4_G2_FW():    
+    simulation = "G2_FW_"
+
     time_file_name = path + beam + simulation + execution + version + process + ".csv"
     print(time_file_name)
-
-    time_file = open(time_file_name, 'w', newline='')
-    writer_csv_file = csv.DictWriter(time_file, fieldnames= ["execucao", "tempo"])
-    writer_csv_file. writeheader()
-
-    dic_time = {'execucao':0, 'tempo':0}
 
     var_lambda = 1064 * nano
         
@@ -66,44 +62,57 @@ def j1_frozen_wave_with_varing_z0_values():
     m_038 = 1.57 - 0.038j
     
     x = np.linspace(0.1, 20, qnt_points)
-    particles = [(ParticleAttributes(i_x, m_038, ur)) for i_x in x]
+    particles = [ParticleAttributes(i_x, m_038, ur) for i_x in x]
 
-    # pool_size = multiprocessing.cpu_count()
-    pool_size = qnt_process
+    results_l2 = []
+    results_l4 = []
 
-    pbar = tqdm(colour=orange, total=max_executions, desc="Calculating points", leave=False)
-    for i in range(max_executions):            
-        pool = multiprocessing.Pool(processes=pool_size)
+    with open(time_file_name, mode="w", newline='') as time_file:
+        fieldnames = ["execucao", "tempo"]
+        writer_csv_file = csv.DictWriter(time_file, fieldnames=fieldnames)
+        writer_csv_file.writeheader()
+
+
+        with tqdm(colour=blue, total=max_executions, desc="Calculating points", leave=True) as pbar:
+            for e in range(max_executions):  
+                
+                startl2 = timer() 
+
+                with multiprocessing.Pool(processes=qnt_process) as pool_l2:
+                    for out_l2 in pool_l2.imap_unordered(partial(j1, beam=fw_l2), particles):
+                        results_l2.append(out_l2)
+                
+                time_l2 = timer() - startl2
+
+
+                startl4 = timer() 
+
+                with multiprocessing.Pool(processes=qnt_process) as pool_l4:
+                    for out_l4 in pool_l4.imap_unordered(partial(j1, beam=fw_l4), particles):
+                        results_l4.append(out_l4 * 250)
+                
+                time_l4 = timer() - startl4
+
         
-        startl2 = timer() 
-        outputs_l2 = pool.starmap(j1, zip(particles, repeat(fw_l2)))
-        pool.close() 
-        pool.join() 
+                dic_time = {fieldnames[0]: e+1, fieldnames[1]: (time_l2 + time_l4)}
+                writer_csv_file.writerows([dic_time])
+                pbar.update()
 
-        time_l2 = timer() - startl2
+        pbar.refresh()
 
+    # print(isinstance(results_l2, collections.abc.Iterator))
 
-        pool_l4 = multiprocessing.Pool(processes=pool_size)
-        
-        startl4 = timer() 
-        outputs_l4 = pool_l4.starmap(j1, zip(particles, repeat(fw_l4)))
-        pool_l4.close() 
-        pool_l4.join() 
-        time_l4 = timer() - startl4
-        
-        time_total = time_l2 + time_l4
+    # results = [results_l2, results_l4]
+    # x_label = "Size Parameter x"
+    # y_label = "Asymmetry Factor $J_1(x)$"
+    # # legend = ["$z_0 = L/2$", r'$z_0 = L/4 \times 250$']
+    # legend = ["$z_0 = L/2$", "$z_0 = L/4 \cdot 250$"]
+    
+    # plot_graphic(results, x, x_label, y_label, title="FW_2_v2" ,legend=legend)
+    # plot_graphic(results, x, x_label, y_label, title="FW_2_v2" ,legend=legend)
+    
 
-        dic_time["execucao"] = i
-        dic_time["tempo"] = time_total
-        
-        writer_csv_file.writerow(dic_time)
-
-        pbar.update()
-
-    time_file.close()
-    pbar.refresh()
-    pbar.close()  
-   
 
 if __name__ == '__main__':
-    j1_frozen_wave_with_varing_z0_values()
+    print("FW_v2")
+    # j1_frozen_wave_with_varing_z0_values_l2_l4_G2_FW()

@@ -36,21 +36,7 @@ def plot_graphic(results_to_plot,
         for i in range(len(results_to_plot)):
                 plt.plot(x_values, results_to_plot[i], color_to_plot[i], label=legend[i])
 
-    
-    # aux_color = 0
-    # aux_line = 0
-
-    # for i in range(len(results_to_plot)):
-    #     if aux_color == len(colors): aux_color = 0
-    #     if aux_line == len(line): aux_line = 0
-    #     color_line = colors[aux_color]+line[aux_line]
-        
-    #     plt.plot(x_values, results_to_plot[i], color_line, label=legend[i])
-        
-    #     aux_color = aux_color+1
-    #     aux_line = aux_line+1
-
-    
+   
     mpl.rcParams['font.size'] = font_size
    
     plt.xlabel(x_label)

@@ -106,7 +106,7 @@ def j1_frozen_wave_with_varing_z0_values_l2_l4_G2_FW():
     
 
 if __name__ == '__main__':
-    # print("frozen wave simulations")
-    j1_frozen_wave_beam_with_three_size_parameters_G1_FW()
-    j1_frozen_wave_with_varing_z0_values_l2_l4_G2_FW()
+    print("frozen wave simulations")
+    # j1_frozen_wave_beam_with_three_size_parameters_G1_FW()
+    # j1_frozen_wave_with_varing_z0_values_l2_l4_G2_FW()
     
