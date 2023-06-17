@@ -33,9 +33,9 @@ def summation(particle, beam):
             gn1 = gn_bessel_beam((i+1), beam.k, beam.z0, beam.angle)
             conj_gn1 = np.conj(gn1)
         elif isinstance(beam, FrozenWaveAttributes):
-            gn = gn_frozen_wave_beam(i, beam.n, beam.k, beam.z0, beam.l, beam.q)
+            gn = gn_frozen_wave_beam_with_parallel(i, beam.n, beam.k, beam.z0, beam.l, beam.q)
             conj_gn = np.conj(gn)
-            gn1 = gn_frozen_wave_beam((i+1), beam.n, beam.k, beam.z0, beam.l, beam.q)
+            gn1 = gn_frozen_wave_beam_with_parallel((i+1), beam.n, beam.k, beam.z0, beam.l, beam.q)
             conj_gn1 = np.conj(gn1)
         else:
             gn = 1
@@ -65,7 +65,7 @@ def summation(particle, beam):
     return summation_result
 
 
-def j1(particle, beam):    
+def j1_with_gn_parallel(particle, beam):    
     """
     TO DO: add description
     

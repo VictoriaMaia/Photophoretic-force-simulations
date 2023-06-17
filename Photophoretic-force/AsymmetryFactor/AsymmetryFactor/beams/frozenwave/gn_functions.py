@@ -1,4 +1,7 @@
 from mpmath import exp
+from itertools import repeat
+
+import multiprocessing
 import scipy.special 
 import scipy.integrate
 import numpy as np
@@ -114,3 +117,44 @@ def gn_frozen_wave_beam(n, n_to_q, k, z0, l, q):
         result_sum += result
                 
     return (-2)/(n*(n+1)) * result_sum
+
+
+
+def gn_frozen_wave_beam_with_parallel(n, n_to_q, k, z0, l, q):
+    """
+    TODO: add description
+    
+    Parameters
+    ----------
+    n      :
+    n_to_q :
+    k      :
+    z0     :
+    l      :  
+    q      :
+    """
+    q_values = [(q_i) for q_i in range(n_to_q, (-n_to_q + 1))]
+
+    result_sum = 0
+
+    with multiprocessing.Pool(processes=2) as pool:
+        for out in pool.starmap(gn_calculate, zip(repeat(n),repeat(k),repeat(z0),repeat(l),repeat(q), q_values)):
+            result_sum += out
+
+    return (-2)/(n*(n+1)) * result_sum
+
+
+
+def gn_calculate(n, k, z0, l, q, q_i):
+
+    kz_q = Kz_q(q_i, l, q)
+    div_kz_q_k = kz_q / k
+
+    frist_term_sum = A_q(l,q_i) / (1 + div_kz_q_k)
+    second_term_sum = pi_m_n(1, n, div_kz_q_k) + tau_m_n(1, n, div_kz_q_k)
+    third_term_sum = exp(1j*kz_q*z0)
+    
+    result = frist_term_sum * second_term_sum * third_term_sum
+
+    return result
+    
