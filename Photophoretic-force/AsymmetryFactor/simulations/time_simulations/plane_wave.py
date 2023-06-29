@@ -19,7 +19,7 @@ orange = '#ff6800'
 max_executions = 10
 qnt_points = 300
 
-path = "./outputs/time_result/"
+path = "./outputs/time_result/OP/"
 beam = "j1_plane_wave_"
 execution = f'and_{max_executions}_times_{qnt_points}_values_'
 version_serial = "v_1_serial"

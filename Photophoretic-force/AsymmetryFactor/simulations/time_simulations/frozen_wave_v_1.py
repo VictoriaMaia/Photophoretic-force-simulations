@@ -26,7 +26,7 @@ max_executions = 10
 qnt_points = 100
 
 
-path = "./outputs/time_result/"
+path = "./outputs/time_result/FW_v1/"
 beam = "j1_frozen_wave_"
 execution = f'and_{max_executions}_times_{qnt_points}_values_'
 version_serial = "v_1_serial"

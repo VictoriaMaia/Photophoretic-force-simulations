@@ -29,10 +29,10 @@ nano = 10**(-9)
 blue = '#1c8bf1'
 
 max_executions = 10
-qnt_points = 50
+qnt_points = 100
 
 # qnt_process = multiprocessing.cpu_count()
-qnt_process = 4
+qnt_process = 3
 
 path = "./outputs/time_result/FW_v2/"
 beam = "j1_frozen_wave_"
@@ -74,6 +74,9 @@ def j1_frozen_wave_with_varing_z0_values_l2_l4_G2_FW():
 
 
         with tqdm(colour=blue, total=max_executions, desc="Calculating points", leave=True) as pbar:
+            results_l2 = []
+            results_l4 = []
+            
             for e in range(max_executions):  
                 
                 startl2 = timer() 
@@ -115,4 +118,4 @@ def j1_frozen_wave_with_varing_z0_values_l2_l4_G2_FW():
 
 if __name__ == '__main__':
     print("FW_v2")
-    # j1_frozen_wave_with_varing_z0_values_l2_l4_G2_FW()
+    j1_frozen_wave_with_varing_z0_values_l2_l4_G2_FW()
