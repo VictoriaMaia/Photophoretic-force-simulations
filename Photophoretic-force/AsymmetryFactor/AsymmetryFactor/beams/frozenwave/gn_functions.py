@@ -158,3 +158,71 @@ def gn_calculate(n, k, z0, l, q, q_i):
 
     return result
     
+
+def gn_frozen_wave_beam_with_Aq_1(n, n_to_q, k, z0, l, q):
+    q_values = np.arange(n_to_q, (-n_to_q + 1))   
+    result_sum = 0
+
+    for q_i in q_values:
+        kz_q = Kz_q(q_i, l, q)
+        div_kz_q_k = kz_q / k
+
+        aq = 1
+
+        frist_term_sum = aq / (1 + div_kz_q_k)
+        second_term_sum = pi_m_n(1, n, div_kz_q_k) + tau_m_n(1, n, div_kz_q_k)
+        third_term_sum = exp(1j*kz_q*z0)
+        
+        result = frist_term_sum * second_term_sum * third_term_sum
+
+        result_sum += result
+                
+    return (-2)/(n*(n+1)) * result_sum
+
+
+def A_q_integral_definida(l, q):
+    """
+    TODO: add description
+    
+    Parameters
+    ----------  
+    l :
+    q :
+    """
+    pi = math.pi
+    i = 1j
+
+    two_pi_q = 2*pi*q
+
+    term_of_frist_exp  = i * (two_pi_q / l) * ((5*l) / 8)
+    term_of_second_exp = i * (two_pi_q / l) * ((3*l) / 8)
+    den = i*two_pi_q
+
+    num = exp(term_of_frist_exp) - exp(term_of_second_exp)
+
+    if num == 0:
+        return 0
+
+    integrate_result = num / den
+    
+    return integrate_result
+
+
+
+def gn_frozen_wave_beam_with_define_integrate_in_Aq(n, n_to_q, k, z0, l, q):
+    q_values = np.arange(n_to_q, (-n_to_q + 1))   
+    result_sum = 0
+
+    for q_i in q_values:
+        kz_q = Kz_q(q_i, l, q)
+        div_kz_q_k = kz_q / k
+
+        frist_term_sum = A_q_integral_definida(l, q_i) / (1 + div_kz_q_k)
+        second_term_sum = pi_m_n(1, n, div_kz_q_k) + tau_m_n(1, n, div_kz_q_k)
+        third_term_sum = exp(1j*kz_q*z0)
+        
+        result = frist_term_sum * second_term_sum * third_term_sum
+
+        result_sum += result
+                
+    return (-2)/(n*(n+1)) * result_sum
